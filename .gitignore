@@ -1,0 +1,48 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+*.venv
+.env
+.venv
+*.egg
+*.egg-info
+*.eggs
+build/
+dist/
+*.dist-info
+pip-wheel-metadata/
+*.manifest
+*.lock
+
+# Typescript artifacts for AWS CDK
+*.tsbuildinfo
+*.d.ts
+*.js
+*.js.map
+cdk.out/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE-specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# Logs
+logs/
+*.log
+
+# AWS-specific
+.aws-sam/
+!cdk.json
+!requirements.txt
