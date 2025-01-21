@@ -46,3 +46,5 @@ logs/
 .aws-sam/
 !cdk.json
 !requirements.txt
+
+.secrets

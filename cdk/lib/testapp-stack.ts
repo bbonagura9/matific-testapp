@@ -6,6 +6,8 @@ import elbv2 = require('aws-cdk-lib/aws-elasticloadbalancingv2');
 import cdk = require('aws-cdk-lib');
 
 const EPHEMERAL_PORT_RANGE = ec2.Port.tcpRange(32768, 65535);
+const DEFAULT_TAG = '1'
+const DEFAULT_REPOSITORY_ARN = 'arn:aws:ecr:sa-east-1:807181840404:repository/matific/test-app'
 
 export class TestAppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -19,14 +21,13 @@ export class TestAppStack extends cdk.Stack {
       });
 
       // Create Task Definition
-      const repository = ecr.Repository.fromRepositoryArn(
-        this,
-        'matific/testapp',
-        'arn:aws:ecr:sa-east-1:807181840404:repository/matific/test-app',
-      );
+      const imageTag = this.node.tryGetContext('tag') || DEFAULT_TAG;
+      const imageRepository = this.node.tryGetContext('repositoryArn') || DEFAULT_REPOSITORY_ARN;
+
+      const repository = ecr.Repository.fromRepositoryArn(this, 'TestAppRepository', imageRepository);
       const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
-      const container = taskDefinition.addContainer('web', {
-        image: ecs.ContainerImage.fromEcrRepository(repository, '2'),
+      const container = taskDefinition.addContainer('Web', {
+        image: ecs.ContainerImage.fromEcrRepository(repository, imageTag),
         memoryLimitMiB: 128,
       });
 
