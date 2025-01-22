@@ -67,6 +67,7 @@ jobs:
 
     - name: CDK Deploy
       run: |
+        export PATH="./node_modules/.bin:$PATH"
         cdk deploy \
           --progress events
           --require-approval never
