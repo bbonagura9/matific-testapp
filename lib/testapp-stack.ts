@@ -19,14 +19,14 @@ export class TestAppStack extends cdk.Stack {
         subnetConfiguration: [
           {
             cidrMask: 26,
-            name: 'A',
+            name: 'public',
             subnetType: ec2.SubnetType.PUBLIC,
           },
           {
             cidrMask: 26,
-            name: 'B',
-            subnetType: ec2.SubnetType.PUBLIC,
-          },
+            name: 'private',
+            subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+          }
         ]
       });
 
