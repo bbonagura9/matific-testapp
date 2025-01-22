@@ -52,19 +52,25 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v3
 
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+
+    - name: Install CDK
+      run: npm install -g aws-cdk
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ env.AWS_ROLE }}
         aws-region: ${{ env.AWS_REGION }}
 
-    - name: cdk deploy
-      uses: tj-actions/aws-cdk@v4
-      with:
-        cdk_subcommand: "deploy"
-        cdk_stack: "TestAppStack"
-        cdk_extra_args: >-
+    - name: CDK Deploy
+      run: |
+        cdk deploy \
           --progress events
           --require-approval never
           --context repositoryArn=arn:aws:ecr:sa-east-1:807181840404:repository/matific/test-app
           --context tag=${{ github.sha }}
+          --role-arn arn:aws:iam::807181840404:role/cdk-hnb659fds-deploy-role-807181840404-sa-east-1
+          TestAppStack
