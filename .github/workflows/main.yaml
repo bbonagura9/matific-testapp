@@ -6,11 +6,13 @@ on:
       - main
 
 jobs:
-  build:
+  build-test-push:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
+    env:
+      REPOSITORY: matific/test-app
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
@@ -26,26 +28,13 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v2
 
     - name: Build docker image
-      env:
-        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        REPOSITORY: matific/test-app
-        IMAGE_TAG: ${{ github.sha }}
       run: |
-        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+        docker build -t ${{ steps.login-ecr.outputs.registry }}/$REPOSITORY:${{ github.sha }} .
 
     - name: Run tests
-      env:
-        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        REPOSITORY: matific/test-app
-        IMAGE_TAG: ${{ github.sha }}
-        REQUIRED_SETTING: foo
       run: |
-        docker run $REGISTRY/$REPOSITORY:$IMAGE_TAG ./test.sh
+        docker run -e REQUIRED_SETTING=foo ${{ steps.login-ecr.outputs.registry }}/$REPOSITORY:${{ github.sha }} ./test.sh
 
     - name: Push docker image
-      env:
-        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        REPOSITORY: matific/test-app
-        IMAGE_TAG: ${{ github.sha }}
       run: |
-        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        docker push ${{ steps.login-ecr.outputs.registry }}/$REPOSITORY:${{ github.sha }}
