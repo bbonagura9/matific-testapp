@@ -1,17 +1,26 @@
 import { Construct } from 'constructs';
-import ecs = require('aws-cdk-lib/aws-ecs');
-import ecr = require('aws-cdk-lib/aws-ecr');
-import ec2 = require('aws-cdk-lib/aws-ec2');
-import elbv2 = require('aws-cdk-lib/aws-elasticloadbalancingv2');
-import cdk = require('aws-cdk-lib');
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import * as cdk from 'aws-cdk-lib';
+import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
+import * as path from 'path';
 
 const EPHEMERAL_PORT_RANGE = ec2.Port.tcpRange(32768, 65535);
-const DEFAULT_TAG = '1'
-const DEFAULT_REPOSITORY_ARN = 'arn:aws:ecr:sa-east-1:807181840404:repository/matific/test-app'
 
 export class TestAppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+      // Build the docker image
+      const asset = new DockerImageAsset(this, 'TestAppImage', {
+        directory: path.normalize(path.join(__dirname, '..', '..')),
+        exclude: [
+          '.git',
+          'cdk',
+        ]
+      });
+
       const vpc = new ec2.Vpc(this, 'Vpc', { 
         maxAzs: 2,
         natGateways: 1,
@@ -37,13 +46,9 @@ export class TestAppStack extends cdk.Stack {
       });
 
       // Create Task Definition
-      const imageTag = this.node.tryGetContext('tag') || DEFAULT_TAG;
-      const imageRepository = this.node.tryGetContext('repositoryArn') || DEFAULT_REPOSITORY_ARN;
-
-      const repository = ecr.Repository.fromRepositoryArn(this, 'TestAppRepository', imageRepository);
       const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
       const container = taskDefinition.addContainer('Web', {
-        image: ecs.ContainerImage.fromEcrRepository(repository, imageTag),
+        image: ecs.ContainerImage.fromDockerImageAsset(asset),
         memoryLimitMiB: 128,
       });
 

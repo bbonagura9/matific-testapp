@@ -11,40 +11,23 @@ env:
   REPOSITORY: matific/test-app
 
 jobs:
-  build-test-push:
+  test:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
+    - uses: actions/setup-python@v5
       with:
-        role-to-assume: ${{ env.AWS_ROLE }}
-        aws-region: ${{ env.AWS_REGION }}
-
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v2
-
-    - name: Build docker image
-      run: |
-        docker build -t ${{ steps.login-ecr.outputs.registry }}/$REPOSITORY:${{ github.sha }} .
+        python-version: '3.9' 
 
     - name: Run tests
-      run: |
-        docker run -e REQUIRED_SETTING=foo ${{ steps.login-ecr.outputs.registry }}/$REPOSITORY:${{ github.sha }} ./test.sh
-
-    - name: Push docker image
-      run: |
-        docker push ${{ steps.login-ecr.outputs.registry }}/$REPOSITORY:${{ github.sha }}
+      working-directory: ./TestApp/testapp
+      run: ./test.sh
 
   cdk-deploy:
     runs-on: ubuntu-latest
-    needs: build-test-push
+    needs: test
     permissions:
       id-token: write
       contents: read
@@ -56,16 +39,18 @@ jobs:
       with:
         node-version: 18
 
-    - name: Install node dependencies
-      run: npm install
-
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ env.AWS_ROLE }}
         aws-region: ${{ env.AWS_REGION }}
 
+    - name: Install node dependencies
+      working-directory: ./cdk
+      run: npm install
+
     - name: CDK Deploy
+      working-directory: ./cdk
       run: |
         export PATH="./node_modules/.bin:$PATH"
         cdk deploy \
