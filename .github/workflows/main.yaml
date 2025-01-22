@@ -6,6 +6,8 @@ on:
       - main
 
 env:
+  AWS_REGION: sa-east-1
+  AWS_ROLE: arn:aws:iam::807181840404:role/GithubActionsOIDC-Role-XhFeMhEOphGb
   REPOSITORY: matific/test-app
 
 jobs:
@@ -21,8 +23,8 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: arn:aws:iam::807181840404:role/GithubActionsOIDC-Role-XhFeMhEOphGb
-        aws-region: sa-east-1
+        role-to-assume: ${{ env.AWS_ROLE }}
+        aws-region: ${{ env.AWS_REGION }}
 
     - name: Login to Amazon ECR
       id: login-ecr
@@ -47,15 +49,22 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-      - name: cdk deploy
-        uses: tj-actions/aws-cdk@v4
-        with:
-          cdk_subcommand: "deploy"
-          cdk_stack: "TestAppStack"
-          cdk_extra_args: >-
-            --progress events
-            --require-approval never
-            --context repositoryArn=arn:aws:ecr:sa-east-1:807181840404:repository/matific/test-app
-            --context tag=${{ github.sha }}
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ env.AWS_ROLE }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: cdk deploy
+      uses: tj-actions/aws-cdk@v4
+      with:
+        cdk_subcommand: "deploy"
+        cdk_stack: "TestAppStack"
+        cdk_extra_args: >-
+          --progress events
+          --require-approval never
+          --context repositoryArn=arn:aws:ecr:sa-east-1:807181840404:repository/matific/test-app
+          --context tag=${{ github.sha }}
