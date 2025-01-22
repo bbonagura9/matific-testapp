@@ -8,7 +8,6 @@ on:
 env:
   AWS_REGION: sa-east-1
   AWS_ROLE: arn:aws:iam::807181840404:role/GithubActionsOIDC-Role-XhFeMhEOphGb
-  REPOSITORY: matific/test-app
 
 jobs:
   test:
