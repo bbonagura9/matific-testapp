@@ -56,7 +56,7 @@ export class TestAppStack extends cdk.Stack {
       listener.addTargets('ECS', {
         port: 80,
         targets: [service.loadBalancerTarget({
-          containerName: 'web',
+          containerName: 'Web',
           containerPort: 8000
         })],
         // include health check (default is none)
