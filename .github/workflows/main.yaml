@@ -38,6 +38,7 @@ jobs:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: matific/test-app
         IMAGE_TAG: ${{ github.sha }}
+        REQUIRED_SETTING: foo
       run: |
         docker run $REGISTRY/$REPOSITORY:$IMAGE_TAG ./test.sh
 
