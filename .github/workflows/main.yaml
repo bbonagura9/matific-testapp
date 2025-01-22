@@ -42,6 +42,7 @@ jobs:
 
   cdk-deploy:
     runs-on: ubuntu-latest
+    needs: build-test-push
     permissions:
       id-token: write
       contents: read
