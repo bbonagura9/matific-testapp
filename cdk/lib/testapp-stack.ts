@@ -43,7 +43,7 @@ export class TestAppStack extends cdk.Stack {
       const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', {
         minCapacity: 2,  // for HA
-        instanceType: instanceType: new ec2.InstanceType('t2.micro'),
+        instanceType: new ec2.InstanceType('t2.micro'),
       });
 
       // Create Task Definition
