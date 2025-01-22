@@ -14,7 +14,7 @@ export class TestAppStack extends cdk.Stack {
     super(scope, id, props);
       const vpc = new ec2.Vpc(this, 'Vpc', { 
         maxAzs: 2,
-        natGateways: 0,
+        natGateways: 1,
         ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/24'),
         subnetConfiguration: [
           {
