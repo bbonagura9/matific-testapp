@@ -69,9 +69,9 @@ jobs:
       run: |
         export PATH="./node_modules/.bin:$PATH"
         cdk deploy \
-          --progress events
-          --require-approval never
-          --context repositoryArn=arn:aws:ecr:sa-east-1:807181840404:repository/matific/test-app
-          --context tag=${{ github.sha }}
-          --role-arn arn:aws:iam::807181840404:role/cdk-hnb659fds-deploy-role-807181840404-sa-east-1
+          --progress events \
+          --require-approval never \
+          --context repositoryArn=arn:aws:ecr:sa-east-1:807181840404:repository/matific/test-app \
+          --context tag=${{ github.sha }} \
+          --role-arn arn:aws:iam::807181840404:role/cdk-hnb659fds-deploy-role-807181840404-sa-east-1 \
           TestAppStack
