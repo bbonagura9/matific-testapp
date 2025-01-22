@@ -12,9 +12,25 @@ const DEFAULT_REPOSITORY_ARN = 'arn:aws:ecr:sa-east-1:807181840404:repository/ma
 export class TestAppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-      // Create a cluster
-      const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
+      const vpc = new ec2.Vpc(this, 'Vpc', { 
+        maxAzs: 2,
+        natGateways: 0,
+        ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/24'),
+        subnetConfiguration: [
+          {
+            cidrMask: 26,
+            name: 'A',
+            subnetType: ec2.SubnetType.PUBLIC,
+          },
+          {
+            cidrMask: 26,
+            name: 'B',
+            subnetType: ec2.SubnetType.PUBLIC,
+          },
+        ]
+      });
 
+      // Create a cluster
       const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO)
