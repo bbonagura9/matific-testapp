@@ -20,6 +20,20 @@ jobs:
       with:
         python-version: '3.9' 
 
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+
+    - name: Install CDK dependencies
+      working-directory: ./cdk
+      run:
+        npm install
+
+    - name: Run ESLint on CDK scripts
+      working-directory: ./cdk
+      run:
+        npx eslint
+
     - name: Install Python dependencies
       working-directory: ./TestApp
       run: |
@@ -67,6 +81,4 @@ jobs:
         cdk deploy \
           --progress events \
           --require-approval never \
-          --context repositoryArn=arn:aws:ecr:sa-east-1:807181840404:repository/matific/test-app \
-          --context tag=${{ github.sha }} \
           TestAppStack
