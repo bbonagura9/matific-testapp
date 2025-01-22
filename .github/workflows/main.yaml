@@ -31,7 +31,9 @@ jobs:
 
     - name: Run tests
       working-directory: ./TestApp/testapp
-      run: ./test.sh
+      run: |
+        source ../venv/bin/activate
+        ./test.sh
 
   cdk-deploy:
     runs-on: ubuntu-latest
