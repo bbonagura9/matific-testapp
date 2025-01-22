@@ -5,14 +5,15 @@ on:
     branches:
       - main
 
+env:
+  REPOSITORY: matific/test-app
+
 jobs:
   build-test-push:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
-    env:
-      REPOSITORY: matific/test-app
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
@@ -38,3 +39,22 @@ jobs:
     - name: Push docker image
       run: |
         docker push ${{ steps.login-ecr.outputs.registry }}/$REPOSITORY:${{ github.sha }}
+
+  cdk-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: cdk deploy
+        uses: tj-actions/aws-cdk@v4
+        with:
+          cdk_subcommand: "deploy"
+          cdk_stack: "TestAppStack"
+          cdk_extra_args: >-
+            --progress events
+            --require-approval never
+            --context repositoryArn=arn:aws:ecr:sa-east-1:807181840404:repository/matific/test-app
+            --context tag=${{ github.sha }}
