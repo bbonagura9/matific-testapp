@@ -56,8 +56,8 @@ jobs:
       with:
         node-version: 18
 
-    - name: Install CDK and ts-node
-      run: npm install -g aws-cdk ts-node
+    - name: Install node dependencies
+      run: npm install
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
