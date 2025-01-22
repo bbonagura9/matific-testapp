@@ -7,4 +7,4 @@ RUN pip install -r /TestApp/requirements.txt
 WORKDIR /TestApp/testapp
 EXPOSE 8000
 
-CMD ["./start.sh"]
+CMD ["gunicorn"]

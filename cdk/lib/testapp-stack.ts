@@ -20,6 +20,7 @@ export class TestAppStack extends cdk.Stack {
         ]
       });
 
+      // Create VPC
       const vpc = new ec2.Vpc(this, 'Vpc', { 
         maxAzs: 2,
         natGateways: 1,
@@ -41,7 +42,8 @@ export class TestAppStack extends cdk.Stack {
       // Create a cluster
       const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO)
+        minCapacity: 2,  // for HA
+        instanceType: instanceType: new ec2.InstanceType('t2.micro'),
       });
 
       // Create Task Definition
